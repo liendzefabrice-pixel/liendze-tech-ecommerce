@@ -1,4 +1,5 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi';
+import { handleOrderValidationEmail } from './api/order/services/order-email';
 
 export default {
   /**
@@ -16,5 +17,33 @@ export default {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    strapi.db.lifecycles.subscribe({
+      models: ['api::order.order'],
+      async beforeUpdate(event) {
+        const where = event.params?.where || {};
+        const orderId = where.id;
+        const documentId = where.documentId;
+
+        if (!orderId && !documentId) {
+          return;
+        }
+
+        const existingOrder = await strapi.db.query('api::order.order').findOne({
+          where: orderId ? { id: orderId } : { documentId },
+          select: ['order_status'],
+        });
+
+        event.state = event.state || {};
+        event.state.previousStatus = existingOrder?.order_status;
+      },
+      async afterUpdate(event) {
+        await handleOrderValidationEmail(
+          strapi,
+          (event.state as { previousStatus?: string | null } | undefined)?.previousStatus,
+          event.result as { order_status?: string; customer_email?: string; order_id?: string }
+        );
+      },
+    });
+  },
 };

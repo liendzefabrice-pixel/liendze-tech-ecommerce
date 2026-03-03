@@ -11,13 +11,17 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "strapi": "strapi",
+    "test:compile": "tsc -p tsconfig.json",
+    "test:order-email": "npm run test:compile && node --test tests/order-email.test.js",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
+    "@strapi/admin": "5.36.1",
+    "@strapi/content-manager": "5.36.1",
     "@strapi/plugin-cloud": "5.36.1",
     "@strapi/plugin-users-permissions": "5.36.1",
-    "@strapi/provider-email-nodemailer": "^5.37.1",
+    "@strapi/provider-email-nodemailer": "5.36.1",
     "@strapi/strapi": "5.36.1",
     "better-sqlite3": "12.4.1",
     "react": "^18.3.1",

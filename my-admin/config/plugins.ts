@@ -3,20 +3,17 @@ export default ({ env }: { env: any }) => ({
     config: {
       provider: 'nodemailer',
       providerOptions: {
-        host: 'smtp.gmail.com',
-        port: 587,
+        host: env('SMTP_HOST', 'smtp.gmail.com'),
+        port: env.int('SMTP_PORT', 587),
         auth: {
-          user: 'liendzefabricecreative@gmail.com',
-          pass: env('SMTP_PASSWORD'), 
+          user: env('SMTP_USER'),
+          pass: env('SMTP_PASSWORD'),
         },
-        secure: false,
-        tls: {
-          rejectUnauthorized: false,
-        },
+        secure: env.bool('SMTP_SECURE', false),
       },
       settings: {
-        defaultFrom: 'liendzefabricecreative@gmail.com',
-        defaultReplyTo: 'liendzefabricecreative@gmail.com',
+        defaultFrom: env('MAIL_FROM', env('SMTP_USER')),
+        defaultReplyTo: env('MAIL_REPLY_TO', env('MAIL_FROM', env('SMTP_USER'))),
       },
     },
   },

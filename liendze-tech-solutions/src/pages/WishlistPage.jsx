@@ -2,6 +2,7 @@ import { Heart, ShoppingCart, Trash2, Package } from 'lucide-react';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import ProductCard from '../components/ProductCard';
+import { getMediaUrl } from '../config/api';
 
 export default function WishlistPage({ onViewProduct }) {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
@@ -47,7 +48,7 @@ export default function WishlistPage({ onViewProduct }) {
               <div className="aspect-square bg-gray-50 flex items-center justify-center p-4 cursor-pointer overflow-hidden relative" onClick={() => onViewProduct(product)}>
                 {p.image?.url || p.image?.data?.attributes?.url ? (
                   <img 
-                    src={`http://localhost:1337${p.image?.url || p.image?.data?.attributes?.url}`} 
+                    src={getMediaUrl(p.image?.url || p.image?.data?.attributes?.url)} 
                     alt={p.name}
                     className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" 
                   />

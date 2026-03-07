@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Trash2, Minus, Plus, Tag, ShoppingBag } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { getMediaUrl } from '../config/api';
 
 export default function Cart({ isOpen, onClose, onCheckout }) {
   const { cart, removeFromCart, updateQuantity, cartTotal, applyPromoCode, discount, discountAmount, finalTotal } = useCart();
@@ -49,7 +50,7 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
                     <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
                       {pi.image?.url || pi.image?.data?.attributes?.url ? (
                         <img 
-                          src={`http://localhost:1337${pi.image?.url || pi.image?.data?.attributes?.url}`} 
+                          src={getMediaUrl(pi.image?.url || pi.image?.data?.attributes?.url)} 
                           alt={pi.name}
                           className="w-full h-full object-contain"
                         />

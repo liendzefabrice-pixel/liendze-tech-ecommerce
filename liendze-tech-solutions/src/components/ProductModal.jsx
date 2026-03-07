@@ -1,6 +1,7 @@
 import { X, ShoppingCart, Heart, Star, Check, Truck, Shield } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
+import { getMediaUrl } from '../config/api';
 
 export default function ProductModal({ product, onClose }) {
   const { addToCart } = useCart();
@@ -10,7 +11,7 @@ export default function ProductModal({ product, onClose }) {
   
   const p = product.attributes || product;
   const imageUrl = p.image?.url || p.image?.data?.attributes?.url 
-    ? `http://localhost:1337${p.image?.url || p.image?.data?.attributes?.url}` 
+    ? getMediaUrl(p.image?.url || p.image?.data?.attributes?.url) 
     : null;
   const inWishlist = isInWishlist(product.id);
 

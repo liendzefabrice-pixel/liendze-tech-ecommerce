@@ -1,9 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import API_URL from '../config/api';
 
 const AuthContext = createContext();
-
-const API_URL = 'http://localhost:1337';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -25,7 +24,7 @@ export function AuthProvider({ children }) {
   const fetchOrders = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await fetch(`${API_URL}/api/orders?filters[client][id][$eq]=${user.id}&populate=*`, {
+      const res = await fetch(`${API_URL}/api/orders/me`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },

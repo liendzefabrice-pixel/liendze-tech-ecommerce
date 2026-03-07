@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { User, Package, LogOut, ShoppingBag, Clock, CheckCircle, Truck, MapPin, Save } from 'lucide-react';
+import { User, Package, LogOut, ShoppingBag, Clock, CheckCircle, Truck, MapPin, Save, ChevronDown, ChevronUp, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
@@ -17,6 +17,7 @@ export default function AccountPage({ onNavigate }) {
   });
   const [deliveryStatus, setDeliveryStatus] = useState({ type: '', message: '' });
   const [savingDelivery, setSavingDelivery] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const defaultDate = useMemo(() => new Date().toISOString(), []);
 
@@ -137,6 +138,9 @@ export default function AccountPage({ onNavigate }) {
           ) : (
             orders.map((order) => {
               const o = order.attributes || order;
+              const orderItems = normalizeOrderItems(o.items);
+              const deliveryInfo = o.delivery_info || {};
+              const isExpanded = expandedOrderId === order.id;
               return (
                 <div key={order.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -153,18 +157,68 @@ export default function AccountPage({ onNavigate }) {
                   </div>
                   
                   <div className="border-t pt-4">
-                    <div className="space-y-2 mb-4">
-                      {o.items && JSON.parse(o.items).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm">
-                          <span className="text-gray-600">{item.name} x{item.quantity}</span>
-                          <span className="font-bold">{item.price * item.quantity} FCFA</span>
-                        </div>
-                      ))}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Articles</p>
+                        <p className="font-semibold text-gray-900">{orderItems.length} produit{orderItems.length > 1 ? 's' : ''}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                        className="inline-flex items-center gap-2 rounded-xl border border-orange-200 px-4 py-2 text-sm font-bold uppercase text-orange-600 hover:bg-orange-50 transition-colors"
+                      >
+                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {isExpanded ? 'Masquer' : 'Voir détails'}
+                      </button>
                     </div>
                     <div className="flex justify-between font-black text-lg">
                       <span>Total</span>
                       <span className="text-orange-600">{o.total_amount?.toLocaleString()} FCSFA</span>
                     </div>
+
+                    {isExpanded && (
+                      <div className="mt-5 grid gap-5 border-t pt-5 md:grid-cols-[1.3fr_1fr]">
+                        <div>
+                          <h4 className="text-sm font-black uppercase text-gray-500 mb-3">Contenu de la commande</h4>
+                          <div className="space-y-2">
+                            {orderItems.map((item, idx) => (
+                              <div key={idx} className="flex justify-between rounded-xl bg-gray-50 px-4 py-3 text-sm">
+                                <span className="text-gray-700">{item.name} x{item.quantity}</span>
+                                <span className="font-bold text-gray-900">{item.price * item.quantity} FCFA</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-black uppercase text-gray-500 mb-3">Livraison</h4>
+                          <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 space-y-3 text-sm">
+                            <div>
+                              <p className="text-gray-400 uppercase text-xs font-bold">Destinataire</p>
+                              <p className="font-semibold text-gray-900">{deliveryInfo.full_name || 'Non renseigné'}</p>
+                            </div>
+                            <div className="flex items-start gap-2 text-gray-700">
+                              <Mail size={15} className="mt-0.5 text-orange-500" />
+                              <span>{deliveryInfo.email || 'Email non renseigné'}</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-gray-700">
+                              <Phone size={15} className="mt-0.5 text-orange-500" />
+                              <span>{deliveryInfo.phone || 'Téléphone non renseigné'}</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-gray-700">
+                              <MapPin size={15} className="mt-0.5 text-orange-500" />
+                              <span>{[deliveryInfo.address, deliveryInfo.city].filter(Boolean).join(', ') || 'Adresse non renseignée'}</span>
+                            </div>
+                            {deliveryInfo.notes && (
+                              <div>
+                                <p className="text-gray-400 uppercase text-xs font-bold">Instructions</p>
+                                <p className="text-gray-700">{deliveryInfo.notes}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -315,4 +369,21 @@ export default function AccountPage({ onNavigate }) {
       )}
     </div>
   );
+}
+
+function normalizeOrderItems(items) {
+  if (Array.isArray(items)) {
+    return items;
+  }
+
+  if (typeof items === 'string') {
+    try {
+      const parsed = JSON.parse(items);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
 }

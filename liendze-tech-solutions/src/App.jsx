@@ -15,6 +15,7 @@ import Cart from './components/Cart';
 import ProductModal from './components/ProductModal';
 import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
+import { getApiUrl } from './config/api';
 
 import WishlistPage from './pages/WishlistPage';
 import AccountPage from './pages/AccountPage';
@@ -33,9 +34,9 @@ function AppContent() {
 
   // Fetch products when category changes
   useEffect(() => {
-    let url = 'http://localhost:1337/api/products?populate=*';
+    let url = getApiUrl('/api/products?populate=*');
     if (selectedCategory) {
-      url = `http://localhost:1337/api/products?filters[category][id][$eq]=${selectedCategory}&populate=*`;
+      url = getApiUrl(`/api/products?filters[category][id][$eq]=${selectedCategory}&populate=*`);
     }
     
     fetch(url)
@@ -46,7 +47,7 @@ function AppContent() {
   }, [selectedCategory]);
 
   useEffect(() => {
-    fetch('http://localhost:1337/api/categories')
+    fetch(getApiUrl('/api/categories'))
       .then((res) => res.json())
       .then((response) => {
         if (response?.data) {

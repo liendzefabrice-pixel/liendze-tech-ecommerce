@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { ShoppingBag, MapPin, Phone, Mail, User, CheckCircle, Loader2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import API_URL from '../config/api';
 
 // Importation du logo officiel
 import logo from '../assets/logo.png';
-
-const API_URL = 'http://localhost:1337';
 
 export default function CheckoutPage({ onNavigate }) {
   const { cart, cartTotal, discount, discountAmount, finalTotal, promoCode, clearCart } = useCart();

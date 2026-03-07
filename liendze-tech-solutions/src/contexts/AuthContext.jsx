@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
   const [orders, setOrders] = useState([]);
+  const [deliveryProfile, setDeliveryProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,11 +37,33 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  const fetchDeliveryProfile = useCallback(async () => {
+    if (!user) {
+      setDeliveryProfile(null);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/delivery-profiles/me`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      const data = await res.json();
+      setDeliveryProfile(data.data || null);
+    } catch {
+      console.error('Erreur fetch delivery profile');
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       fetchOrders();
+      fetchDeliveryProfile();
+    } else {
+      setDeliveryProfile(null);
     }
-  }, [user, fetchOrders]);
+  }, [user, fetchOrders, fetchDeliveryProfile]);
 
   const register = async (username, email, password) => {
     setLoading(true);
@@ -123,15 +146,42 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const saveDeliveryProfile = async (profileData) => {
+    if (!user) return { success: false, error: 'Non connecté' };
+
+    try {
+      const res = await fetch(`${API_URL}/api/delivery-profiles/me`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ data: profileData }),
+      });
+      const data = await res.json();
+
+      if (data.data) {
+        setDeliveryProfile(data.data);
+        return { success: true, profile: data.data };
+      }
+
+      return { success: false, error: data.error?.message || 'Erreur sauvegarde livraison' };
+    } catch {
+      return { success: false, error: 'Erreur sauvegarde livraison' };
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       orders,
+      deliveryProfile,
       loading,
       login,
       register,
       logout,
       createOrder,
+      saveDeliveryProfile,
       isAuthenticated: !!user,
     }}>
       {children}

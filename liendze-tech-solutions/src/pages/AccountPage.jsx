@@ -1,12 +1,22 @@
-import { useState, useMemo } from 'react';
-import { User, Package, LogOut, ShoppingBag, Clock, CheckCircle, Truck, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { User, Package, LogOut, ShoppingBag, Clock, CheckCircle, Truck, MapPin, Save } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
 export default function AccountPage({ onNavigate }) {
-  const { user, orders, logout, isAuthenticated } = useAuth();
+  const { user, orders, deliveryProfile, logout, saveDeliveryProfile, isAuthenticated } = useAuth();
   const { clearCart } = useCart();
   const [activeTab, setActiveTab] = useState('orders');
+  const [deliveryForm, setDeliveryForm] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    notes: '',
+  });
+  const [deliveryStatus, setDeliveryStatus] = useState({ type: '', message: '' });
+  const [savingDelivery, setSavingDelivery] = useState(false);
 
   const defaultDate = useMemo(() => new Date().toISOString(), []);
 
@@ -20,6 +30,17 @@ export default function AccountPage({ onNavigate }) {
     clearCart();
     onNavigate('home');
   };
+
+  useEffect(() => {
+    setDeliveryForm({
+      full_name: deliveryProfile?.full_name || user?.username || '',
+      email: deliveryProfile?.email || user?.email || '',
+      phone: deliveryProfile?.phone || '',
+      address: deliveryProfile?.address || '',
+      city: deliveryProfile?.city || '',
+      notes: deliveryProfile?.notes || '',
+    });
+  }, [deliveryProfile, user]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -89,6 +110,12 @@ export default function AccountPage({ onNavigate }) {
           className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold uppercase text-sm transition-colors ${activeTab === 'profile' ? 'bg-orange-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
         >
           <User size={18} /> Profil
+        </button>
+        <button
+          onClick={() => setActiveTab('delivery')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold uppercase text-sm transition-colors ${activeTab === 'delivery' ? 'bg-orange-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
+        >
+          <MapPin size={18} /> Livraison
         </button>
       </div>
 
@@ -163,6 +190,127 @@ export default function AccountPage({ onNavigate }) {
               <span className="font-bold">2026</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'delivery' && (
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
+          <div className="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <h3 className="text-xl font-bold">Informations de livraison</h3>
+              <p className="text-gray-500 text-sm mt-1">
+                Ces informations seront pré-remplies lors de vos prochaines commandes.
+              </p>
+            </div>
+          </div>
+
+          {deliveryStatus.message && (
+            <div className={`mb-6 rounded-2xl px-4 py-3 text-sm font-medium ${deliveryStatus.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+              {deliveryStatus.message}
+            </div>
+          )}
+
+          <form
+            className="space-y-5"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setSavingDelivery(true);
+              setDeliveryStatus({ type: '', message: '' });
+
+              const result = await saveDeliveryProfile(deliveryForm);
+
+              if (result.success) {
+                setDeliveryStatus({ type: 'success', message: 'Informations de livraison enregistrées.' });
+              } else {
+                setDeliveryStatus({ type: 'error', message: result.error || 'Impossible d’enregistrer vos informations.' });
+              }
+
+              setSavingDelivery(false);
+            }}
+          >
+            <div className="grid md:grid-cols-2 gap-5">
+              <label className="space-y-2">
+                <span className="text-xs font-black uppercase text-gray-400 ml-1">Nom complet *</span>
+                <input
+                  type="text"
+                  required
+                  value={deliveryForm.full_name}
+                  onChange={(e) => setDeliveryForm({ ...deliveryForm, full_name: e.target.value })}
+                  className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium"
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-xs font-black uppercase text-gray-400 ml-1">Téléphone *</span>
+                <input
+                  type="tel"
+                  required
+                  value={deliveryForm.phone}
+                  onChange={(e) => setDeliveryForm({ ...deliveryForm, phone: e.target.value })}
+                  className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium"
+                />
+              </label>
+            </div>
+
+            <label className="space-y-2 block">
+              <span className="text-xs font-black uppercase text-gray-400 ml-1">Email *</span>
+              <input
+                type="email"
+                required
+                value={deliveryForm.email}
+                onChange={(e) => setDeliveryForm({ ...deliveryForm, email: e.target.value })}
+                className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium"
+              />
+            </label>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <label className="space-y-2">
+                <span className="text-xs font-black uppercase text-gray-400 ml-1">Ville *</span>
+                <select
+                  required
+                  value={deliveryForm.city}
+                  onChange={(e) => setDeliveryForm({ ...deliveryForm, city: e.target.value })}
+                  className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium appearance-none"
+                >
+                  <option value="">Choisir...</option>
+                  <option value="Douala">Douala</option>
+                  <option value="Yaoundé">Yaoundé</option>
+                  <option value="Kribi">Kribi</option>
+                  <option value="Bafoussam">Bafoussam</option>
+                  <option value="Autre">Autre ville</option>
+                </select>
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-xs font-black uppercase text-gray-400 ml-1">Adresse *</span>
+                <input
+                  type="text"
+                  required
+                  value={deliveryForm.address}
+                  onChange={(e) => setDeliveryForm({ ...deliveryForm, address: e.target.value })}
+                  className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium"
+                />
+              </label>
+            </div>
+
+            <label className="space-y-2 block">
+              <span className="text-xs font-black uppercase text-gray-400 ml-1">Notes de livraison</span>
+              <textarea
+                value={deliveryForm.notes}
+                onChange={(e) => setDeliveryForm({ ...deliveryForm, notes: e.target.value })}
+                rows={3}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-orange-500 outline-none transition-all font-medium resize-none"
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={savingDelivery}
+              className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-xl font-black uppercase hover:bg-orange-600 transition-colors disabled:opacity-60"
+            >
+              {savingDelivery ? 'Enregistrement...' : <><Save size={16} /> Enregistrer</>}
+            </button>
+          </form>
         </div>
       )}
     </div>

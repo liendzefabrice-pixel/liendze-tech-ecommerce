@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "delivery_profiles",
+  "info": {
+    "singularName": "delivery-profile",
+    "pluralName": "delivery-profiles",
+    "displayName": "Delivery Profile",
+    "description": "Saved delivery information for a user"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "full_name": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "notes": {
+      "type": "text"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

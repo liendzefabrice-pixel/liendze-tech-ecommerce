@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ShoppingBag, MapPin, Phone, Mail, User, CheckCircle, Loader2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,7 +10,7 @@ const API_URL = 'http://localhost:1337';
 
 export default function CheckoutPage({ onNavigate }) {
   const { cart, cartTotal, discount, discountAmount, finalTotal, promoCode, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, deliveryProfile, saveDeliveryProfile } = useAuth();
   const [formData, setFormData] = useState({
     name: user?.username || '',
     phone: '',
@@ -19,9 +19,30 @@ export default function CheckoutPage({ onNavigate }) {
     notes: '',
     email: user?.email || '',
   });
+  const [saveAsDefault, setSaveAsDefault] = useState(!!user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderComplete, setOrderComplete] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setFormData((current) => ({
+      ...current,
+      name: deliveryProfile?.full_name || user.username || current.name,
+      phone: deliveryProfile?.phone || current.phone,
+      address: deliveryProfile?.address || current.address,
+      city: deliveryProfile?.city || current.city,
+      notes: deliveryProfile?.notes || current.notes,
+      email: deliveryProfile?.email || user.email || current.email,
+    }));
+  }, [deliveryProfile, user]);
+
+  useEffect(() => {
+    setSaveAsDefault(!!user);
+  }, [user]);
 
   const validateForm = () => {
     if (!formData.name.trim()) return 'Veuillez entrer votre nom';
@@ -69,10 +90,21 @@ export default function CheckoutPage({ onNavigate }) {
         ...(user?.id ? { client: user.id } : {}),
       };
 
+      if (user && saveAsDefault) {
+        const saveProfileResult = await saveDeliveryProfile(orderData.delivery_info);
+
+        if (!saveProfileResult.success) {
+          setError(saveProfileResult.error || 'Impossible de sauvegarder votre adresse de livraison');
+          setLoading(false);
+          return;
+        }
+      }
+
       const res = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
         },
         body: JSON.stringify({ data: orderData }),
       });
@@ -260,6 +292,20 @@ export default function CheckoutPage({ onNavigate }) {
                 placeholder="Ex: Appeler avant d'arriver..."
               />
             </div>
+
+            {user && (
+              <label className="flex items-start gap-3 rounded-2xl border border-orange-100 bg-orange-50/60 px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={saveAsDefault}
+                  onChange={(e) => setSaveAsDefault(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                />
+                <span className="text-sm text-gray-700">
+                  Enregistrer ces informations comme adresse de livraison par défaut pour mes prochaines commandes.
+                </span>
+              </label>
+            )}
           </form>
         </div>
 

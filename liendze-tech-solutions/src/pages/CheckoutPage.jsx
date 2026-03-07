@@ -58,12 +58,14 @@ export default function CheckoutPage({ onNavigate }) {
         items: JSON.stringify(items),
         total_amount: finalTotal,
         order_status: 'en_attente',
-        customer_name: formData.name,
-        customer_phone: formData.phone,
-        customer_email: formData.email,
-        shipping_address: formData.address,
-        shipping_city: formData.city,
-        notes: formData.notes,
+        delivery_info: {
+          full_name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          notes: formData.notes,
+        },
         ...(user?.id ? { client: user.id } : {}),
       };
 

@@ -11,6 +11,8 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "strapi": "strapi",
+    "migrate:order-delivery-info": "npm run test:compile && node scripts/migrate-order-delivery-info.js",
+    "migrate:order-delivery-info:apply": "npm run test:compile && node scripts/migrate-order-delivery-info.js --apply",
     "test:compile": "tsc -p tsconfig.json",
     "test:order-email": "npm run test:compile && node --test tests/order-email.test.js",
     "upgrade": "npx @strapi/upgrade latest",

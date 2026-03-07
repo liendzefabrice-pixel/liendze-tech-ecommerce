@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_order_delivery_infos",
+  "info": {
+    "displayName": "delivery-info",
+    "description": "Customer delivery and contact details for an order"
+  },
+  "options": {},
+  "attributes": {
+    "full_name": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "notes": {
+      "type": "text"
+    }
+  }
+}

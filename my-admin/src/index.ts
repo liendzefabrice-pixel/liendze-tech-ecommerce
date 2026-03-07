@@ -43,15 +43,17 @@ export default {
           (event.state as { previousStatus?: string | null } | undefined)?.previousStatus,
           event.result as {
             order_status?: string;
-            customer_email?: string;
-            customer_name?: string;
             order_id?: string;
             total_amount?: number | string;
-            shipping_address?: string;
-            shipping_city?: string;
-            customer_phone?: string;
-            notes?: string;
             items?: unknown;
+            delivery_info?: {
+              full_name?: string;
+              email?: string;
+              phone?: string;
+              address?: string;
+              city?: string;
+              notes?: string;
+            };
           }
         );
       },

@@ -47,7 +47,9 @@ test('detects a transition into valide as sendable', () => {
   assert.equal(
     shouldSendValidationEmail('en_attente', {
       order_status: 'valide',
-      customer_email: 'badinfo1987@gmail.com',
+      delivery_info: {
+        email: 'badinfo1987@gmail.com',
+      },
     }),
     true
   );
@@ -57,7 +59,9 @@ test('does not send when status stays valide', () => {
   assert.equal(
     shouldSendValidationEmail('valide', {
       order_status: 'valide',
-      customer_email: 'badinfo1987@gmail.com',
+      delivery_info: {
+        email: 'badinfo1987@gmail.com',
+      },
     }),
     false
   );
@@ -69,12 +73,14 @@ test('sends an email when an order becomes valide and has a customer email', asy
   const sent = await handleOrderValidationEmail(harness.strapi, 'en_attente', {
     order_id: 'CMD-1001',
     order_status: 'valide',
-    customer_email: 'badinfo1987@gmail.com',
-    customer_name: 'Marie Dupont',
     total_amount: 25000,
-    shipping_address: 'Rue 123, Akwa',
-    shipping_city: 'Douala',
-    customer_phone: '+237699000111',
+    delivery_info: {
+      email: 'badinfo1987@gmail.com',
+      full_name: 'Marie Dupont',
+      address: 'Rue 123, Akwa',
+      city: 'Douala',
+      phone: '+237699000111',
+    },
     items: [
       { name: 'Ordinateur portable', quantity: 1, price: 25000 },
     ],
@@ -102,7 +108,9 @@ test('does not send when the updated order is not valide', async () => {
   const sent = await handleOrderValidationEmail(harness.strapi, 'en_attente', {
     order_id: 'CMD-1002',
     order_status: 'en_attente',
-    customer_email: 'badinfo1987@gmail.com',
+    delivery_info: {
+      email: 'badinfo1987@gmail.com',
+    },
   });
 
   assert.equal(sent, false);
@@ -117,7 +125,9 @@ test('does not send when the customer email is missing', async () => {
   const sent = await handleOrderValidationEmail(harness.strapi, 'en_attente', {
     order_id: 'CMD-1003',
     order_status: 'valide',
-    customer_email: null,
+    delivery_info: {
+      email: null,
+    },
   });
 
   assert.equal(sent, false);

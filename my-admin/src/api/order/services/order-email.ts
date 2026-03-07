@@ -1,30 +1,41 @@
 import type { Core } from '@strapi/strapi';
 
 type OrderLike = {
-  customer_email?: string | null;
-  customer_name?: string | null;
   order_id?: string | null;
   order_status?: string | null;
   total_amount?: number | string | null;
+  items?: unknown;
+  delivery_info?: DeliveryInfoLike | null;
+  customer_email?: string | null;
+  customer_name?: string | null;
   shipping_address?: string | null;
   shipping_city?: string | null;
   customer_phone?: string | null;
   notes?: string | null;
-  items?: unknown;
+};
+
+type DeliveryInfoLike = {
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  notes?: string | null;
 };
 
 export const shouldSendValidationEmail = (
   previousStatus: string | null | undefined,
   order: OrderLike | null | undefined
 ) => {
-  return order?.order_status === 'valide' && previousStatus !== 'valide' && !!order?.customer_email;
+  return order?.order_status === 'valide' && previousStatus !== 'valide' && !!getDeliveryInfo(order).email;
 };
 
 export const sendOrderValidationEmail = async (strapi: Core.Strapi, order: OrderLike) => {
-  const customerName = order.customer_name?.trim() || 'Cher client';
+  const deliveryInfo = getDeliveryInfo(order);
+  const customerName = deliveryInfo.full_name?.trim() || 'Cher client';
   const orderId = order.order_id?.trim() || 'N/A';
   const totalAmount = formatCurrency(order.total_amount);
-  const addressLines = [order.shipping_address, order.shipping_city].filter(Boolean).join(', ');
+  const addressLines = [deliveryInfo.address, deliveryInfo.city].filter(Boolean).join(', ');
   const items = normalizeItems(order.items);
   const itemsHtml = items.length
     ? `
@@ -56,15 +67,15 @@ export const sendOrderValidationEmail = async (strapi: Core.Strapi, order: Order
     { label: 'Statut', value: 'Validee' },
     { label: 'Montant total', value: totalAmount },
     { label: 'Adresse de livraison', value: addressLines || 'Non renseignee' },
-    { label: 'Telephone', value: order.customer_phone?.trim() || 'Non renseigne' },
+    { label: 'Telephone', value: deliveryInfo.phone?.trim() || 'Non renseigne' },
   ];
 
-  const notesHtml = order.notes?.trim()
-    ? `<p style="margin: 16px 0 0; color: #486581; font-size: 14px; line-height: 1.6;"><strong>Note:</strong> ${escapeHtml(order.notes.trim())}</p>`
+  const notesHtml = deliveryInfo.notes?.trim()
+    ? `<p style="margin: 16px 0 0; color: #486581; font-size: 14px; line-height: 1.6;"><strong>Note:</strong> ${escapeHtml(deliveryInfo.notes.trim())}</p>`
     : '';
 
   await strapi.plugin('email').service('email').send({
-    to: order.customer_email as string,
+    to: deliveryInfo.email as string,
     subject: `Confirmation de commande ${orderId}`,
     text: buildTextEmail(customerName, summaryRows, items),
     html: `
@@ -200,6 +211,15 @@ const escapeHtml = (value: string) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+
+const getDeliveryInfo = (order: OrderLike | null | undefined): DeliveryInfoLike => ({
+  full_name: order?.delivery_info?.full_name ?? order?.customer_name ?? null,
+  email: order?.delivery_info?.email ?? order?.customer_email ?? null,
+  phone: order?.delivery_info?.phone ?? order?.customer_phone ?? null,
+  address: order?.delivery_info?.address ?? order?.shipping_address ?? null,
+  city: order?.delivery_info?.city ?? order?.shipping_city ?? null,
+  notes: order?.delivery_info?.notes ?? order?.notes ?? null,
+});
 
 export const handleOrderValidationEmail = async (
   strapi: Core.Strapi,

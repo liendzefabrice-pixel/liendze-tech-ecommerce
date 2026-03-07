@@ -459,6 +459,45 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDeliveryProfileDeliveryProfile
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'delivery_profiles';
+  info: {
+    description: 'Saved delivery information for a user';
+    displayName: 'Delivery Profile';
+    pluralName: 'delivery-profiles';
+    singularName: 'delivery-profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    address: Schema.Attribute.Text & Schema.Attribute.Required;
+    city: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    full_name: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::delivery-profile.delivery-profile'
+    > &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    phone: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
   collectionName: 'orders';
   info: {
@@ -1039,6 +1078,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::category.category': ApiCategoryCategory;
+      'api::delivery-profile.delivery-profile': ApiDeliveryProfileDeliveryProfile;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
       'plugin::content-releases.release': PluginContentReleasesRelease;

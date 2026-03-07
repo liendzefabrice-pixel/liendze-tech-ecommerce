@@ -173,7 +173,7 @@ export default function AccountPage({ onNavigate }) {
                     </div>
                     <div className="flex justify-between font-black text-lg">
                       <span>Total</span>
-                      <span className="text-orange-600">{o.total_amount?.toLocaleString()} FCSFA</span>
+                      <span className="text-orange-600">{o.total_amount?.toLocaleString()} FCFA</span>
                     </div>
 
                     {isExpanded && (

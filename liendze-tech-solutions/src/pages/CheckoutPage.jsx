@@ -90,17 +90,7 @@ export default function CheckoutPage({ onNavigate }) {
         ...(user?.id ? { client: user.id } : {}),
       };
 
-      if (user && saveAsDefault) {
-        const saveProfileResult = await saveDeliveryProfile(orderData.delivery_info);
-
-        if (!saveProfileResult.success) {
-          setError(saveProfileResult.error || 'Impossible de sauvegarder votre adresse de livraison');
-          setLoading(false);
-          return;
-        }
-      }
-
-      const res = await fetch(`${API_URL}/api/orders`, {
+      const res = await fetch(`${API_URL}/api/orders/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,6 +102,10 @@ export default function CheckoutPage({ onNavigate }) {
       const data = await res.json();
 
       if (data.data) {
+        if (user && saveAsDefault) {
+          await saveDeliveryProfile(orderData.delivery_info);
+        }
+
         clearCart();
         setOrderComplete(true);
       } else {

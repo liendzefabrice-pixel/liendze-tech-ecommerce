@@ -1,15 +1,27 @@
 import { Facebook, Smartphone, Mail, MapPin, Phone } from 'lucide-react';
 
+// Importation du logo officiel
+import logo from '../assets/logo.png';
+
 export default function Footer({ onNavigate }) {
   return (
     <footer className="bg-gray-950 text-white pt-16 mt-16 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 pb-16">
         <div className="space-y-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('home')}>
-            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center font-black italic text-xl">L</div>
-            <span className="text-xl font-black tracking-tighter uppercase">LIENDZE TECH</span>
+            {/* Remplacement du bloc orange par l'image du logo */}
+            <img 
+              src={logo} 
+              alt="Liendze Tech Logo" 
+              className="h-10 w-auto object-contain" 
+            />
+            <span className="text-xl font-black tracking-tighter uppercase">
+              LIENDZE <span className="text-orange-500">TECH</span>
+            </span>
           </div>
-          <p className="text-gray-400 text-sm italic leading-relaxed">Leader de la distribution informatique au Cameroun. Qualité & Performance IT directement importés pour vous.</p>
+          <p className="text-gray-400 text-sm italic leading-relaxed">
+            Leader de la distribution informatique au Cameroun. Qualité & Performance IT directement importés pour vous.
+          </p>
         </div>
         
         <div>

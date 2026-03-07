@@ -3,6 +3,9 @@ import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useAuth } from '../contexts/AuthContext';
 
+// Importation du logo officiel
+import logo from '../assets/logo.png';
+
 export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobileMenuOpen, setIsMobileMenuOpen, searchQuery, setSearchQuery, categories, setSelectedCategory }) {
   const { itemCount } = useCart();
   const { wishlistCount } = useWishlist();
@@ -19,9 +22,19 @@ export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobile
   return (
     <>
       <header className="bg-white border-b sticky top-0 z-40 p-4 flex items-center justify-between gap-4 shadow-sm">
-        <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors">
-          <Menu size={28} />
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 text-orange-500 hover:bg-orange-50 rounded-full transition-colors">
+            <Menu size={28} />
+          </button>
+          
+          {/* Logo cliquable pour revenir à l'accueil */}
+          <img 
+            src={logo} 
+            alt="Liendze Tech" 
+            className="h-10 w-auto cursor-pointer hidden sm:block" 
+            onClick={() => navigateTo('home')}
+          />
+        </div>
         
         <div className="flex-1 max-w-2xl relative">
           <input
@@ -74,8 +87,12 @@ export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobile
       <div className={`fixed inset-0 z-[100] lg:hidden ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
         <div className={`absolute inset-0 bg-black/60 transition-opacity ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setIsMobileMenuOpen(false)}></div>
         <div className={`absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl transform transition-transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="p-6 bg-orange-500 text-white font-black italic shadow-md uppercase flex justify-between items-center">
-            <span>Liendze Tech</span>
+          {/* Logo intégré dans le bandeau orange mobile */}
+          <div className="p-6 bg-orange-500 text-white flex justify-between items-center shadow-md">
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="LTS" className="h-8 w-auto brightness-0 invert" />
+              <span className="font-black italic uppercase tracking-tighter">Liendze Tech</span>
+            </div>
             <button onClick={() => setIsMobileMenuOpen(false)}><X size={24}/></button>
           </div>
           

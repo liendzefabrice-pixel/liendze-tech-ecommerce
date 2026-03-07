@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ShieldCheck, Clock, CheckCircle2, Wrench, Monitor } from 'lucide-react';
 
+// Importation du logo
+import logo from './assets/logo.png'; 
+
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -80,13 +83,17 @@ function AppContent() {
         return (
           <>
             {!selectedCategory && !searchQuery && (
-              <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-10 p-8 border-l-8 border-l-orange-500 animate-in fade-in duration-500">
-                <h2 className="text-4xl font-black mb-4 tracking-tighter uppercase leading-tight">
-                  Bienvenue chez <span className="text-orange-500">Liendze Tech</span>
-                </h2>
-                <p className="text-gray-600 text-lg italic max-w-2xl">
-                  Qualité & Performance IT directement importés pour vous.
-                </p>
+              <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-10 p-8 border-l-8 border-l-orange-500 animate-in fade-in duration-500 flex flex-col md:flex-row items-center gap-8">
+                {/* Ajout du logo dans le bloc de bienvenue */}
+                <img src={logo} alt="LTS Logo" className="h-28 w-auto object-contain" />
+                <div>
+                  <h2 className="text-4xl font-black mb-4 tracking-tighter uppercase leading-tight">
+                    Bienvenue chez <span className="text-orange-500">Liendze Tech</span>
+                  </h2>
+                  <p className="text-gray-600 text-lg italic max-w-2xl">
+                    Qualité & Performance IT directement importés pour vous au Cameroun.
+                  </p>
+                </div>
               </div>
             )}
 
@@ -117,9 +124,12 @@ function AppContent() {
       case 'about':
         return (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 max-w-4xl mx-auto animate-in fade-in">
-            <h2 className="text-4xl font-black italic uppercase mb-8">
-              À Propos de <span className="text-orange-500">Liendze Tech</span>
-            </h2>
+            <div className="flex items-center gap-6 mb-8">
+               <img src={logo} alt="Logo" className="h-16 w-auto" />
+               <h2 className="text-4xl font-black italic uppercase">
+                 À Propos de <span className="text-orange-500">Liendze Tech</span>
+               </h2>
+            </div>
             <p className="text-gray-600 text-lg leading-relaxed italic mb-8">
               Leader de la distribution informatique au Cameroun, nous fournissons du matériel certifié pour professionnels et particuliers.
             </p>

@@ -60,7 +60,7 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-bold uppercase truncate text-gray-800">{pi.name}</p>
-                      <p className="text-orange-600 font-black italic">{(price * qty).toLocaleString()} FCFA</p>
+                      <p className="text-orange-600 font-black italic">{(price * qty).toLocaleString()} USD</p>
                       <div className="flex items-center gap-2 mt-2">
                         <button 
                           onClick={() => updateQuantity(item.id, qty - 1)}
@@ -116,17 +116,17 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Sous-total</span>
-                  <span>{cartTotal.toLocaleString()} FCFA</span>
+                  <span>{cartTotal.toLocaleString()} USD</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Remise ({discount}%)</span>
-                    <span>-{discountAmount.toLocaleString()} FCFA</span>
+                    <span>-{discountAmount.toLocaleString()} USD</span>
                   </div>
                 )}
                 <div className="flex justify-between text-2xl font-black uppercase italic">
                   <span>TOTAL :</span>
-                  <span className="text-orange-600">{finalTotal.toLocaleString()} FCFA</span>
+                  <span className="text-orange-600">{finalTotal.toLocaleString()} USD</span>
                 </div>
               </div>
               

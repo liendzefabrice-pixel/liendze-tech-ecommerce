@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 // Importation du logo officiel
 import logo from '../assets/logo.png';
 
-export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobileMenuOpen, setIsMobileMenuOpen, searchQuery, setSearchQuery, categories, setSelectedCategory }) {
+export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobileMenuOpen, setIsMobileMenuOpen, searchQuery, setSearchQuery, onSearch, categories, setSelectedCategory }) {
   const { itemCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated } = useAuth();
@@ -42,14 +42,15 @@ export default function Header({ onNavigate, onOpenAuth, setIsCartOpen, isMobile
             placeholder="Rechercher un produit..."
             className="w-full border-2 border-orange-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              onNavigate('home');
-            }}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <div className="absolute right-0 top-0 bottom-0 bg-orange-500 text-white px-4 rounded-r-lg flex items-center">
+          <button 
+            type="button"
+            onClick={onSearch}
+            className="absolute right-0 top-0 bottom-0 bg-orange-500 text-white px-4 rounded-r-lg flex items-center hover:bg-orange-600 transition-colors cursor-pointer"
+          >
             <Search size={20} />
-          </div>
+          </button>
         </div>
 
         <div className="flex items-center gap-2">

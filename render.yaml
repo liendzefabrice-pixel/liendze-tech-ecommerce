@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: liendze-tech-api
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20.17.0
+      - key: DATABASE_CLIENT
+        value: postgres
+      - key: DATABASE_URL
+        fromDatabase:
+          name: liendze-tech-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: true
+      - key: DATABASE_SSL_REJECT_UNAUTHORIZED
+        value: false
+      - key: PORT
+        value: 1337
+
+databases:
+  - name: liendze-tech-db
+    databaseName: liendze_tech
+    user: admin
+    plan: free

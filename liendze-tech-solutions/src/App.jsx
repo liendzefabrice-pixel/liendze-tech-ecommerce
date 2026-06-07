@@ -28,11 +28,13 @@ function AppContent() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchTrigger, setSearchTrigger] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState("home");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  // Fetch products when category changes
+  // fetch des produits à chaque changement de catégorie
   useEffect(() => {
     let url = getApiUrl('/api/products?populate=*');
     if (selectedCategory) {
@@ -63,15 +65,40 @@ function AppContent() {
   const navigateTo = (page) => {
     setCurrentPage(page);
     setSearchQuery("");
+    setHasSearched(false);
+    setSearchTrigger(0);
     window.scrollTo(0, 0);
     setIsMobileMenuOpen(false);
   };
 
-  const filteredProducts = products.filter(product => {
-    const p = product.attributes || product;
-    const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  // Recherche quand on clique sur le bouton
+  useEffect(() => {
+    if (searchTrigger === 0) return;
+    
+    let url = getApiUrl('/api/products?populate=*');
+    if (searchQuery) {
+      url = getApiUrl(`/api/products?filters[name][$containsi]=${searchQuery}&populate=*`);
+    }
+    
+    fetch(url)
+      .then((res) => res.json())
+      .then((response) => {
+        if (response?.data) setProducts(response.data);
+      }).catch(err => console.error("Erreur recherche:", err));
+  }, [searchTrigger]);
+
+  const handleSearch = () => {
+    setCurrentPage("home");
+    setHasSearched(true);
+    setSearchTrigger(prev => prev + 1);
+    window.scrollTo(0, 0);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setHasSearched(false);
+    setSearchTrigger(0);
+  };
 
   const handleCheckout = () => {
     setIsCartOpen(false);
@@ -83,7 +110,7 @@ function AppContent() {
       case 'home':
         return (
           <>
-            {!selectedCategory && !searchQuery && (
+            {!selectedCategory && !hasSearched && (
               <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-10 p-8 border-l-8 border-l-orange-500 animate-in fade-in duration-500 flex flex-col md:flex-row items-center gap-8">
                 {/* Ajout du logo dans le bloc de bienvenue */}
                 <img src={logo} alt="LTS Logo" className="h-28 w-auto object-contain" />
@@ -104,13 +131,13 @@ function AppContent() {
                 : "Nos Articles"}
             </h3>
             
-            {filteredProducts.length === 0 ? (
+            {products.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-gray-500 text-lg">Aucun produit trouvé</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
+                {products.map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
@@ -235,6 +262,7 @@ function AppContent() {
           setIsMobileMenuOpen={setIsMobileMenuOpen}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          onSearch={handleSearch}
           categories={categories}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}

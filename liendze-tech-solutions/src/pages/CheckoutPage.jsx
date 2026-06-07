@@ -318,7 +318,7 @@ export default function CheckoutPage({ onNavigate }) {
                     <span className="text-sm font-bold truncate max-w-[180px]">{p.name}</span>
                     <span className="text-[10px] text-gray-500 uppercase font-black">Quantité: {qty}</span>
                   </div>
-                  <span className="font-black text-orange-500 whitespace-nowrap italic">{(p.price * qty).toLocaleString()} FCFA</span>
+                  <span className="font-black text-orange-500 whitespace-nowrap italic">{(p.price * qty).toLocaleString()} USD</span>
                 </div>
               );
             })}
@@ -327,20 +327,20 @@ export default function CheckoutPage({ onNavigate }) {
           <div className="border-t border-gray-800 pt-6 space-y-3">
             <div className="flex justify-between text-gray-400 text-xs font-bold uppercase">
               <span>Sous-total</span>
-              <span>{cartTotal.toLocaleString()} FCFA</span>
+              <span>{cartTotal.toLocaleString()} USD</span>
             </div>
             
             {discount > 0 && (
               <div className="flex justify-between text-green-400 text-xs font-bold uppercase">
                 <span>Remise ({promoCode})</span>
-                <span>-{discountAmount.toLocaleString()} FCFA</span>
+                <span>-{discountAmount.toLocaleString()} USD</span>
               </div>
             )}
             
             <div className="flex justify-between items-end pt-4">
               <span className="text-xs font-black uppercase tracking-widest text-gray-400">Total Final</span>
               <span className="text-3xl font-black text-orange-500 italic">
-                {finalTotal.toLocaleString()} <small className="text-xs italic uppercase">FCFA</small>
+                {finalTotal.toLocaleString()} <small className="text-xs italic uppercase">USD</small>
               </span>
             </div>
           </div>

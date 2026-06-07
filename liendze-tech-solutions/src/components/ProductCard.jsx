@@ -51,7 +51,7 @@ export default function ProductCard({ product, onViewDetails }) {
       
       <div className="p-5 flex flex-col flex-1 border-t">
         <h3 className="text-sm font-bold truncate uppercase text-gray-800">{p.name}</h3>
-        <p className="text-orange-600 font-black mt-1 text-xl mb-5 italic">{p.price?.toLocaleString()} FCFA</p>
+        <p className="text-orange-600 font-black mt-1 text-xl mb-5 italic">{p.price?.toLocaleString()} USD</p>
         
         <div className="mt-auto space-y-2">
           <button 

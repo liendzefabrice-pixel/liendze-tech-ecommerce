@@ -64,7 +64,7 @@ export default function WishlistPage({ onViewProduct }) {
               </div>
               <div className="p-4">
                 <h3 className="font-bold uppercase text-sm truncate mb-1">{p.name}</h3>
-                <p className="text-orange-600 font-black italic">{p.price?.toLocaleString()} FCFA</p>
+                <p className="text-orange-600 font-black italic">{p.price?.toLocaleString()} USD</p>
                 <button 
                   onClick={() => moveToCart(product)}
                   className="w-full mt-3 bg-orange-500 text-white py-2 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"

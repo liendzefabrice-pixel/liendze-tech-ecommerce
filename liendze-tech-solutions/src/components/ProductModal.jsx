@@ -54,7 +54,7 @@ export default function ProductModal({ product, onClose }) {
             </div>
             
             <div className="text-3xl md:text-4xl font-black text-orange-600 mb-6 italic">
-              {p.price?.toLocaleString()} FCFA
+              {p.price?.toLocaleString()} USD
             </div>
             
             {p.description && (

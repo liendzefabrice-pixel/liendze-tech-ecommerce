@@ -1,0 +1,11 @@
+version: "3"
+agent:
+  authtoken: 3EoZk7w9OYdT7pHoZ2UjkB4MIXm_2vW5EsF8qVV3HEkx2siHL
+tunnels:
+  frontend:
+    proto: http
+    addr: 5173
+    domain: dreamily-quality-pushcart.ngrok-free.dev
+  backend:
+    proto: http
+    addr: 1337

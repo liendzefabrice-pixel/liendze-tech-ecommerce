@@ -173,7 +173,7 @@ export default function AccountPage({ onNavigate }) {
                     </div>
                     <div className="flex justify-between font-black text-lg">
                       <span>Total</span>
-                      <span className="text-orange-600">{o.total_amount?.toLocaleString()} FCFA</span>
+                      <span className="text-orange-600">{o.total_amount?.toLocaleString()} USD</span>
                     </div>
 
                     {isExpanded && (
@@ -184,7 +184,7 @@ export default function AccountPage({ onNavigate }) {
                             {orderItems.map((item, idx) => (
                               <div key={idx} className="flex justify-between rounded-xl bg-gray-50 px-4 py-3 text-sm">
                                 <span className="text-gray-700">{item.name} x{item.quantity}</span>
-                                <span className="font-bold text-gray-900">{item.price * item.quantity} FCFA</span>
+                                <span className="font-bold text-gray-900">{item.price * item.quantity} USD</span>
                               </div>
                             ))}
                           </div>

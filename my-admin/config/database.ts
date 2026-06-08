@@ -49,11 +49,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
       },
       useNullAsDefault: true,
     },
-    mongo: {
-      connection: {
-        connectionString: env('DATABASE_URL'),
-      },
-    },
   };
 
   return {
